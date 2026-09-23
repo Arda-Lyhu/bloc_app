@@ -1,0 +1,56 @@
+import 'package:go_router/go_router.dart';
+import '../shell/main_shell.dart';
+import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/categories/presentation/screens/categories_screen.dart';
+import '../../features/checkout/presentation/screens/checkout_screen.dart';
+import '../../features/notifications/presentation/screens/notifications_screen.dart';
+import '../../features/orders/presentation/screens/orders_screen.dart';
+import '../../features/products/presentation/screens/product_detail_screen.dart';
+import '../../features/search/presentation/screens/search_screen.dart';
+import '../../features/settings/presentation/screens/settings_screen.dart';
+
+final appRouter = GoRouter(
+  initialLocation: '/',
+  routes: [
+    GoRoute(
+      path: '/',
+      builder: (context, state) => const MainShell(),
+    ),
+    GoRoute(
+      path: '/product/:id',
+      builder: (context, state) {
+        final idStr = state.pathParameters['id'];
+        final id = int.tryParse(idStr ?? '') ?? 0;
+        return ProductDetailScreen(productId: id);
+      },
+    ),
+    GoRoute(
+      path: '/login',
+      builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: '/categories',
+      builder: (context, state) => const CategoriesScreen(),
+    ),
+    GoRoute(
+      path: '/search',
+      builder: (context, state) => const SearchScreen(),
+    ),
+    GoRoute(
+      path: '/checkout',
+      builder: (context, state) => const CheckoutScreen(),
+    ),
+    GoRoute(
+      path: '/orders',
+      builder: (context, state) => const OrdersScreen(),
+    ),
+    GoRoute(
+      path: '/notifications',
+      builder: (context, state) => const NotificationsScreen(),
+    ),
+    GoRoute(
+      path: '/settings',
+      builder: (context, state) => const SettingsScreen(),
+    ),
+  ],
+);
