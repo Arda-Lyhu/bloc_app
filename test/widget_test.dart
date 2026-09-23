@@ -1,15 +1,17 @@
 import 'package:app_scale/app/app_env.dart';
 import 'package:app_scale/app/shell/main_shell.dart';
 import 'package:app_scale/app/theme/app_theme.dart';
-import 'package:app_scale/features/cart/presentation/cubit/cart_cubit.dart';
-import 'package:app_scale/features/favorites/presentation/cubit/favorites_cubit.dart';
-import 'package:app_scale/features/home/presentation/cubit/home_cubit.dart';
+import 'package:app_scale/features/cart/presentation/bloc/cart_bloc.dart';
+import 'package:app_scale/features/favorites/presentation/bloc/favorites_bloc.dart';
+import 'package:app_scale/features/home/presentation/bloc/home_bloc.dart';
+import 'package:app_scale/features/home/presentation/bloc/home_event.dart';
 import 'package:app_scale/features/products/domain/entities/product.dart';
 import 'package:app_scale/features/products/domain/repositories/product_repository.dart';
 import 'package:app_scale/features/products/domain/usecases/get_product_detail.dart';
 import 'package:app_scale/features/products/domain/usecases/get_products.dart';
 import 'package:app_scale/features/products/domain/usecases/search_products.dart';
-import 'package:app_scale/features/products/presentation/bloc/products_cubit.dart';
+import 'package:app_scale/features/products/presentation/bloc/product/products_bloc.dart';
+import 'package:app_scale/features/products/presentation/bloc/product/products_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -54,8 +56,8 @@ void main() {
     final getProductDetail = GetProductDetail(fakeRepo);
     final searchProducts = SearchProducts(fakeRepo);
 
-    final homeCubit = HomeCubit(getProducts: getProducts);
-    final productsCubit = ProductsCubit(getProducts: getProducts);
+    final homeBloc = HomeBloc(getProducts: getProducts);
+    final productsBloc = ProductsBloc(getProducts: getProducts);
 
     await tester.pumpWidget(
       MultiRepositoryProvider(
@@ -67,10 +69,12 @@ void main() {
         ],
         child: MultiBlocProvider(
           providers: [
-            BlocProvider<ProductsCubit>.value(value: productsCubit..fetchProducts()),
-            BlocProvider<HomeCubit>.value(value: homeCubit..fetchHomeFeed()),
-            BlocProvider<CartCubit>(create: (context) => CartCubit()),
-            BlocProvider<FavoritesCubit>(create: (context) => FavoritesCubit()),
+            BlocProvider<ProductsBloc>.value(
+                value: productsBloc..add(FetchProductsEvent())),
+            BlocProvider<HomeBloc>.value(
+                value: homeBloc..add(FetchHomeFeedEvent())),
+            BlocProvider<CartBloc>(create: (context) => CartBloc()),
+            BlocProvider<FavoritesBloc>(create: (context) => FavoritesBloc()),
           ],
           child: MaterialApp(
             theme: AppTheme.lightTheme,

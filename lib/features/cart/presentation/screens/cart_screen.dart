@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../app/theme/app_colors.dart';
-import '../cubit/cart_cubit.dart';
-import '../cubit/cart_state.dart';
+import '../bloc/cart_bloc.dart';
+import '../bloc/cart_event.dart';
+import '../bloc/cart_state.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -11,23 +12,31 @@ class CartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Bag', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
+        title: const Text('My Bag',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
         centerTitle: false,
       ),
-      body: BlocBuilder<CartCubit, CartState>(
+      body: BlocBuilder<CartBloc, CartState>(
         builder: (context, state) {
           final cartItems = state.items;
           final totalAmount = state.totalAmount;
-          final cubit = context.read<CartCubit>();
+          final bloc = context.read<CartBloc>();
 
           if (cartItems.isEmpty) {
             return const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.shopping_bag_outlined, size: 80, color: AppColors.textSecondary),
+                  Icon(Icons.shopping_bag_outlined,
+                      size: 80, color: AppColors.textSecondary),
                   SizedBox(height: 16),
-                  Text('Your bag is empty', style: TextStyle(fontSize: 18, color: AppColors.textSecondary)),
+                  Text(
+                    'Your bag is empty',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
                 ],
               ),
             );
@@ -39,7 +48,8 @@ class CartScreen extends StatelessWidget {
                 child: ListView.separated(
                   padding: const EdgeInsets.all(16),
                   itemCount: cartItems.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 16),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 16),
                   itemBuilder: (context, index) {
                     final item = cartItems[index];
                     return Container(
@@ -68,53 +78,72 @@ class CartScreen extends StatelessWidget {
                               height: 120,
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) =>
-                                  Container(color: Colors.grey[200], width: 100),
+                                  Container(
+                                      color: Colors.grey[200], width: 100),
                             ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 12, horizontal: 8),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         item.product.title,
-                                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16),
                                       ),
                                       IconButton(
-                                        icon: const Icon(Icons.more_vert, size: 20, color: AppColors.textSecondary),
-                                        onPressed: () => cubit.removeFromCart(item.product.id),
+                                        icon: const Icon(Icons.more_vert,
+                                            size: 20,
+                                            color: AppColors.textSecondary),
+                                        onPressed: () => bloc.add(
+                                            RemoveFromCartEvent(
+                                                item.product.id)),
                                       ),
                                     ],
                                   ),
                                   Text(
                                     'Color: ${item.color}   Size: ${item.size}',
-                                    style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                                    style: const TextStyle(
+                                        fontSize: 11,
+                                        color: AppColors.textSecondary),
                                   ),
                                   const Spacer(),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Row(
                                         children: [
                                           _buildCircleButton(
                                             icon: Icons.remove,
-                                            onTap: () => cubit.decrementQuantity(item.product.id),
+                                            onTap: () => bloc.add(
+                                                DecrementQuantityEvent(
+                                                    item.product.id)),
                                           ),
                                           Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12),
                                             child: Text(
                                               '${item.quantity}',
-                                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14),
                                             ),
                                           ),
                                           _buildCircleButton(
                                             icon: Icons.add,
-                                            onTap: () => cubit.incrementQuantity(item.product.id),
+                                            onTap: () => bloc.add(
+                                                IncrementQuantityEvent(
+                                                    item.product.id)),
                                           ),
                                         ],
                                       ),
@@ -155,10 +184,15 @@ class CartScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Total amount:', style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
+                        const Text('Total amount:',
+                            style: TextStyle(
+                                color: AppColors.textSecondary, fontSize: 14)),
                         Text(
                           '${totalAmount.toStringAsFixed(0)}\$',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: AppColors.textPrimary),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: AppColors.textPrimary),
                         ),
                       ],
                     ),
@@ -169,14 +203,20 @@ class CartScreen extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Proceeding to checkout...')),
+                            const SnackBar(
+                                content: Text('Proceeding to checkout...')),
                           );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25)),
                         ),
-                        child: const Text('CHECK OUT', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+                        child: const Text('CHECK OUT',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14)),
                       ),
                     ),
                   ],
@@ -189,7 +229,8 @@ class CartScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCircleButton({required IconData icon, required VoidCallback onTap}) {
+  Widget _buildCircleButton(
+      {required IconData icon, required VoidCallback onTap}) {
     return Material(
       color: Colors.white,
       shape: const CircleBorder(),

@@ -4,8 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/widgets/app_error.dart';
 import '../../../../core/widgets/app_loader.dart';
 import '../../domain/usecases/get_product_detail.dart';
-import '../bloc/product_detail_cubit.dart';
-import '../bloc/product_detail_state.dart';
+import '../bloc/product_detail/product_detail_bloc.dart';
+import '../bloc/product_detail/product_detail_event.dart';
+import '../bloc/product_detail/product_detail_state.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   final int productId;
@@ -20,21 +21,23 @@ class ProductDetailScreen extends StatelessWidget {
     final getProductDetail = context.read<GetProductDetail>();
 
     return BlocProvider(
-      create: (context) => ProductDetailCubit(getProductDetail: getProductDetail)
-        ..fetchProductDetail(productId),
+      create: (context) =>
+          ProductDetailBloc(getProductDetail: getProductDetail)
+            ..add(FetchProductDetailEvent(productId)),
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Product Details'),
         ),
-        body: BlocBuilder<ProductDetailCubit, ProductDetailState>(
+        body: BlocBuilder<ProductDetailBloc, ProductDetailState>(
           builder: (context, state) {
             if (state is ProductDetailLoading) {
               return const AppLoader(message: 'Loading product details...');
             } else if (state is ProductDetailError) {
               return AppError(
                 message: state.message,
-                onRetry: () =>
-                    context.read<ProductDetailCubit>().fetchProductDetail(productId),
+                onRetry: () => context
+                    .read<ProductDetailBloc>()
+                    .add(FetchProductDetailEvent(productId)),
               );
             } else if (state is ProductDetailLoaded) {
               final product = state.product;
@@ -94,7 +97,8 @@ class ProductDetailScreen extends StatelessWidget {
                                   const SizedBox(width: 4),
                                   Text(
                                     '${product.rating}',
-                                    style: theme.textTheme.titleMedium?.copyWith(
+                                    style:
+                                        theme.textTheme.titleMedium?.copyWith(
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),

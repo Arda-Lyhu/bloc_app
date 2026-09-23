@@ -7,8 +7,9 @@ import '../../../../core/widgets/app_loader.dart';
 import '../../../products/presentation/widgets/hero_banner.dart';
 import '../../../products/presentation/widgets/product_item_card.dart';
 import '../../../products/presentation/widgets/section_header.dart';
-import '../cubit/home_cubit.dart';
-import '../cubit/home_state.dart';
+import '../bloc/home_bloc.dart';
+import '../bloc/home_event.dart';
+import '../bloc/home_state.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -16,14 +17,15 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocBuilder<HomeCubit, HomeState>(
+      body: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
           if (state is HomeLoading) {
             return const AppLoader(message: 'Loading store with BLoC...');
           } else if (state is HomeError) {
             return AppError(
               message: state.message,
-              onRetry: () => context.read<HomeCubit>().fetchHomeFeed(),
+              onRetry: () =>
+                  context.read<HomeBloc>().add(FetchHomeFeedEvent()),
             );
           } else if (state is HomeLoaded) {
             return SingleChildScrollView(

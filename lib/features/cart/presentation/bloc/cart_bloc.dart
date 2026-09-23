@@ -1,10 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/cart_item.dart';
 import '../../../products/domain/entities/product.dart';
+import 'cart_event.dart';
 import 'cart_state.dart';
 
-class CartCubit extends Cubit<CartState> {
-  CartCubit()
+class CartBloc extends Bloc<CartEvent, CartState> {
+  CartBloc()
       : super(
           CartState(
             items: [
@@ -44,23 +45,31 @@ class CartCubit extends Cubit<CartState> {
               ),
             ],
           ),
-        );
+        ) {
+    on<AddToCartEvent>(_onAddToCart);
+    on<IncrementQuantityEvent>(_onIncrementQuantity);
+    on<DecrementQuantityEvent>(_onDecrementQuantity);
+    on<RemoveFromCartEvent>(_onRemoveFromCart);
+  }
 
-  void addToCart(Product product) {
-    final index = state.items.indexWhere((item) => item.product.id == product.id);
+  void _onAddToCart(AddToCartEvent event, Emitter<CartState> emit) {
+    final index =
+        state.items.indexWhere((item) => item.product.id == event.product.id);
     if (index >= 0) {
       final existing = state.items[index];
       final updatedList = List<CartItem>.from(state.items);
       updatedList[index] = existing.copyWith(quantity: existing.quantity + 1);
       emit(state.copyWith(items: updatedList));
     } else {
-      emit(state.copyWith(items: [...state.items, CartItem(product: product)]));
+      emit(state.copyWith(
+          items: [...state.items, CartItem(product: event.product)]));
     }
   }
 
-  void incrementQuantity(int productId) {
+  void _onIncrementQuantity(
+      IncrementQuantityEvent event, Emitter<CartState> emit) {
     final updatedList = state.items.map((item) {
-      if (item.product.id == productId) {
+      if (item.product.id == event.productId) {
         return item.copyWith(quantity: item.quantity + 1);
       }
       return item;
@@ -68,9 +77,10 @@ class CartCubit extends Cubit<CartState> {
     emit(state.copyWith(items: updatedList));
   }
 
-  void decrementQuantity(int productId) {
+  void _onDecrementQuantity(
+      DecrementQuantityEvent event, Emitter<CartState> emit) {
     final updatedList = state.items.map((item) {
-      if (item.product.id == productId && item.quantity > 1) {
+      if (item.product.id == event.productId && item.quantity > 1) {
         return item.copyWith(quantity: item.quantity - 1);
       }
       return item;
@@ -78,9 +88,10 @@ class CartCubit extends Cubit<CartState> {
     emit(state.copyWith(items: updatedList));
   }
 
-  void removeFromCart(int productId) {
+  void _onRemoveFromCart(
+      RemoveFromCartEvent event, Emitter<CartState> emit) {
     final updatedList =
-        state.items.where((item) => item.product.id != productId).toList();
+        state.items.where((item) => item.product.id != event.productId).toList();
     emit(state.copyWith(items: updatedList));
   }
 }

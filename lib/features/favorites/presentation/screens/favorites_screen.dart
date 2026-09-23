@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../products/presentation/widgets/product_item_card.dart';
-import '../cubit/favorites_cubit.dart';
-import '../cubit/favorites_state.dart';
+import '../bloc/favorites_bloc.dart';
+import '../bloc/favorites_state.dart';
 
 class FavoritesScreen extends StatelessWidget {
   const FavoritesScreen({super.key});
@@ -20,7 +20,7 @@ class FavoritesScreen extends StatelessWidget {
         ),
         centerTitle: false,
       ),
-      body: BlocBuilder<FavoritesCubit, FavoritesState>(
+      body: BlocBuilder<FavoritesBloc, FavoritesState>(
         builder: (context, state) {
           if (state.favorites.isEmpty) {
             return const Center(

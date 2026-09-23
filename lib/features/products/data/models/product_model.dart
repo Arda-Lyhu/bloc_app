@@ -20,7 +20,8 @@ class ProductModel extends Product {
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
     final price = (json['price'] as num?)?.toDouble() ?? 0.0;
-    final discountPercentage = (json['discountPercentage'] as num?)?.toDouble() ?? 0.0;
+    final discountPercentage =
+        (json['discountPercentage'] as num?)?.toDouble() ?? 0.0;
     final oldPrice = discountPercentage > 0
         ? (price / (1 - (discountPercentage / 100)))
         : price;
