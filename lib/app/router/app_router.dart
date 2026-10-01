@@ -2,7 +2,7 @@ import 'package:app_scale/features/home/presentation/screens/home_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'route_name.dart';
 import '../shell/main_shell.dart';
-import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/auth/presentation/screens/login/login_screen.dart';
 import '../../features/categories/presentation/screens/categories_screen.dart';
 import '../../features/checkout/presentation/screens/checkout_screen.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';

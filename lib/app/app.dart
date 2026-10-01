@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import '../core/network/api_client.dart';
 import '../features/auth/data/datasources/user_remote_datasoure.dart';
 import '../features/auth/data/repositories/user_repositories_impl.dart';
+import '../features/auth/domain/usecases/register.dart';
 import '../features/auth/domain/usecases/user_login.dart';
+import '../features/auth/domain/usecases/user_logout.dart';
 import '../features/auth/presentation/bloc/user_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../features/cart/presentation/bloc/cart_bloc.dart';
@@ -42,6 +44,8 @@ class App extends StatelessWidget {
     final userRepository =
         UserRepositoriesImpl(userRemoteDatasoure: userRemoteDataSource);
     final userLogin = UserLoginUseCase(userRepositories: userRepository);
+    final userRegister = UserRegisterUseCase(userRepository);
+    final userLogout = UserLogoutUseCase(userRepository);
 
     return MultiRepositoryProvider(
       providers: [
@@ -68,7 +72,11 @@ class App extends StatelessWidget {
             create: (context) => FavoritesBloc(),
           ),
           BlocProvider<UserBloc>(
-            create: (context) => UserBloc(userLogin),
+            create: (context) => UserBloc(
+              userLogin: userLogin,
+              userRegister: userRegister,
+              userLogout: userLogout,
+            ),
           ),
         ],
         child: MaterialApp.router(

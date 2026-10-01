@@ -1,17 +1,20 @@
 part of 'user_bloc.dart';
 
-sealed class UserState extends Equatable {
+abstract class UserState extends Equatable {
   const UserState();
 
   @override
   List<Object> get props => [];
 }
 
-final class UserInitial extends UserState {}
+// login states
+class UserInitial extends UserState {}
 
-final class UserLoginLoading extends UserState {}
+class UserLoginLoading extends UserState {}
 
-final class UserLoginError extends UserState {
+class UserLoginSuccess extends UserState {}
+
+class UserLoginError extends UserState {
   final String message;
 
   const UserLoginError({required this.message});
@@ -20,4 +23,30 @@ final class UserLoginError extends UserState {
   List<Object> get props => [message];
 }
 
-final class UserLoginSuccess extends UserState {}
+// register states
+class UserRegisterLoading extends UserState {}
+
+class UserRegisterSuccess extends UserState {}
+
+class UserRegisterError extends UserState {
+  final String message;
+
+  const UserRegisterError({required this.message});
+
+  @override
+  List<Object> get props => [message];
+}
+
+// logout states
+class UserLogoutLoading extends UserState {}
+
+class UserLogoutSuccess extends UserState {}
+
+class UserLogoutError extends UserState {
+  final String message;
+
+  const UserLogoutError({required this.message});
+
+  @override
+  List<Object> get props => [message];
+}
