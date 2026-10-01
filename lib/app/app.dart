@@ -1,5 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import '../features/auth/data/datasources/user_remote_datasoure.dart';
+import '../features/auth/data/repositories/user_repositories_impl.dart';
+import '../features/auth/domain/usecases/user_login.dart';
+import '../features/auth/presentation/bloc/user_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../features/cart/presentation/bloc/cart_bloc.dart';
 import '../features/favorites/presentation/bloc/favorites_bloc.dart';
@@ -40,6 +44,10 @@ class App extends StatelessWidget {
     final getProducts = GetProducts(productRepository);
     final getProductDetail = GetProductDetail(productRepository);
     final searchProducts = SearchProducts(productRepository);
+    final userRemoteDataSource = UserRemoteDatasoureImpl(dio: dio);
+    final userRepository =
+        UserRepositoriesImpl(userRemoteDatasoure: userRemoteDataSource);
+    final userLogin = UserLogin(userRepositories: userRepository);
 
     return MultiRepositoryProvider(
       providers: [
@@ -64,6 +72,9 @@ class App extends StatelessWidget {
           ),
           BlocProvider<FavoritesBloc>(
             create: (context) => FavoritesBloc(),
+          ),
+          BlocProvider<UserBloc>(
+            create: (context) => UserBloc(userLogin),
           ),
         ],
         child: MaterialApp.router(

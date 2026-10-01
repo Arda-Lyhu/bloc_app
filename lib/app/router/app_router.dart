@@ -1,4 +1,6 @@
+import 'package:app_scale/features/home/presentation/screens/home_screen.dart';
 import 'package:go_router/go_router.dart';
+import 'route_name.dart';
 import '../shell/main_shell.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/categories/presentation/screens/categories_screen.dart';
@@ -10,14 +12,21 @@ import '../../features/search/presentation/screens/search_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 
 final appRouter = GoRouter(
-  initialLocation: '/',
+  initialLocation: RoutePath.mainShell,
   routes: [
     GoRoute(
-      path: '/',
+      path: RoutePath.mainShell,
+      name: RouteName.mainShell,
       builder: (context, state) => const MainShell(),
     ),
     GoRoute(
-      path: '/product/:id',
+      path: RoutePath.home,
+      name: RouteName.home,
+      builder: (context, state) => const HomeScreen(),
+    ),
+    GoRoute(
+      path: RoutePath.productDetail,
+      name: RouteName.productDetail,
       builder: (context, state) {
         final idStr = state.pathParameters['id'];
         final id = int.tryParse(idStr ?? '') ?? 0;
@@ -25,31 +34,38 @@ final appRouter = GoRouter(
       },
     ),
     GoRoute(
-      path: '/login',
+      path: RoutePath.login,
+      name: RouteName.login,
       builder: (context, state) => const LoginScreen(),
     ),
     GoRoute(
-      path: '/categories',
+      path: RoutePath.categories,
+      name: RouteName.categories,
       builder: (context, state) => const CategoriesScreen(),
     ),
     GoRoute(
-      path: '/search',
+      path: RoutePath.search,
+      name: RouteName.search,
       builder: (context, state) => const SearchScreen(),
     ),
     GoRoute(
-      path: '/checkout',
+      path: RoutePath.checkout,
+      name: RouteName.checkout,
       builder: (context, state) => const CheckoutScreen(),
     ),
     GoRoute(
-      path: '/orders',
+      path: RoutePath.orders,
+      name: RouteName.orders,
       builder: (context, state) => const OrdersScreen(),
     ),
     GoRoute(
-      path: '/notifications',
+      path: RoutePath.notifications,
+      name: RouteName.notifications,
       builder: (context, state) => const NotificationsScreen(),
     ),
     GoRoute(
-      path: '/settings',
+      path: RoutePath.settings,
+      name: RouteName.settings,
       builder: (context, state) => const SettingsScreen(),
     ),
   ],

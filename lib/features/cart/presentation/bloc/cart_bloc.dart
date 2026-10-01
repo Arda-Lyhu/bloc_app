@@ -27,7 +27,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
                 color: 'Black',
               ),
               CartItem(
-                product: const Product(
+                product: Product(
                   id: 102,
                   title: 'T-Shirt',
                   description: 'White basic t-shirt',
@@ -61,8 +61,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       updatedList[index] = existing.copyWith(quantity: existing.quantity + 1);
       emit(state.copyWith(items: updatedList));
     } else {
-      emit(state.copyWith(
-          items: [...state.items, CartItem(product: event.product)]));
+      emit(state
+          .copyWith(items: [...state.items, CartItem(product: event.product)]));
     }
   }
 
@@ -88,10 +88,10 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     emit(state.copyWith(items: updatedList));
   }
 
-  void _onRemoveFromCart(
-      RemoveFromCartEvent event, Emitter<CartState> emit) {
-    final updatedList =
-        state.items.where((item) => item.product.id != event.productId).toList();
+  void _onRemoveFromCart(RemoveFromCartEvent event, Emitter<CartState> emit) {
+    final updatedList = state.items
+        .where((item) => item.product.id != event.productId)
+        .toList();
     emit(state.copyWith(items: updatedList));
   }
 }

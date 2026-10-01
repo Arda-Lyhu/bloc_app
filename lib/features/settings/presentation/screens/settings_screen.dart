@@ -24,12 +24,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Personal Information',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const Text(
+              'Personal Information',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
             const SizedBox(height: 12),
             const TextField(
               decoration: InputDecoration(
-                  labelText: 'Full Name', border: OutlineInputBorder()),
+                labelText: 'Full Name',
+                border: OutlineInputBorder(),
+              ),
             ),
             const SizedBox(height: 24),
             const Text('Notifications',

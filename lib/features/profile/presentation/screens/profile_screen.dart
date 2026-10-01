@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:app_scale/app/router/route_name.dart';
 import '../../../../app/theme/app_colors.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -20,7 +21,7 @@ class ProfileScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
-            onPressed: () => context.push('/search'),
+            onPressed: () => context.pushNamed(RouteName.search),
           ),
         ],
       ),
@@ -30,7 +31,7 @@ class ProfileScreen extends StatelessWidget {
           children: [
             // User Header Info
             GestureDetector(
-              onTap: () => context.push('/login'),
+              onTap: () => context.pushNamed(RouteName.login),
               child: Row(
                 children: [
                   CircleAvatar(
@@ -70,27 +71,27 @@ class ProfileScreen extends StatelessWidget {
             _buildProfileTile(
               title: 'My orders',
               subtitle: 'Already have 12 orders',
-              onTap: () => context.push('/orders'),
+              onTap: () => context.pushNamed(RouteName.orders),
             ),
             _buildProfileTile(
               title: 'Shipping addresses',
               subtitle: '3 addresses',
-              onTap: () => context.push('/checkout'),
+              onTap: () => context.pushNamed(RouteName.checkout),
             ),
             _buildProfileTile(
               title: 'Notifications',
               subtitle: 'Sales & app alerts',
-              onTap: () => context.push('/notifications'),
+              onTap: () => context.pushNamed(RouteName.notifications),
             ),
             _buildProfileTile(
               title: 'Settings',
               subtitle: 'Notifications, password',
-              onTap: () => context.push('/settings'),
+              onTap: () => context.pushNamed(RouteName.settings),
             ),
             _buildProfileTile(
               title: 'Logout',
               subtitle: 'Sign out of account',
-              onTap: () => context.push('/login'),
+              onTap: () => context.goNamed(RouteName.login),
             ),
           ],
         ),

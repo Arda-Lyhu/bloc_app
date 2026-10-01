@@ -20,7 +20,7 @@ class FakeProductRepository implements ProductRepository {
   @override
   Future<List<Product>> getProducts() async {
     return [
-      const Product(
+      Product(
         id: 1,
         title: 'Test Product',
         description: 'Test Description',

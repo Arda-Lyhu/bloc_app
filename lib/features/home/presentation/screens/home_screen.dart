@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:app_scale/app/router/route_name.dart';
 
 import '../../../../core/widgets/app_error.dart';
 import '../../../../core/widgets/app_loader.dart';
@@ -24,8 +25,7 @@ class HomeScreen extends StatelessWidget {
           } else if (state is HomeError) {
             return AppError(
               message: state.message,
-              onRetry: () =>
-                  context.read<HomeBloc>().add(FetchHomeFeedEvent()),
+              onRetry: () => context.read<HomeBloc>().add(FetchHomeFeedEvent()),
             );
           } else if (state is HomeLoaded) {
             return SingleChildScrollView(
@@ -58,7 +58,10 @@ class HomeScreen extends StatelessWidget {
                         return ProductItemCard(
                           product: item,
                           onTap: () {
-                            context.push('/product/${item.id}');
+                            context.pushNamed(
+                              RouteName.productDetail,
+                              pathParameters: {'id': item.id.toString()},
+                            );
                           },
                         );
                       },
@@ -88,7 +91,10 @@ class HomeScreen extends StatelessWidget {
                         return ProductItemCard(
                           product: item,
                           onTap: () {
-                            context.push('/product/${item.id}');
+                            context.pushNamed(
+                              RouteName.productDetail,
+                              pathParameters: {'id': item.id.toString()},
+                            );
                           },
                         );
                       },
