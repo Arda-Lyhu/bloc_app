@@ -15,4 +15,18 @@ class UserRepositoriesImpl implements UserRepositories {
       password: password,
     );
   }
+
+  @override
+  Future<UserEntity> logout() {
+    return userRemoteDatasoure.logoutUser();
+  }
+
+  @override
+  Future<UserEntity> register(
+      {required String username,
+      required String email,
+      required String password}) {
+    // TODO: implement register
+    throw UnimplementedError();
+  }
 }

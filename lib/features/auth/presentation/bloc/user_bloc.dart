@@ -8,7 +8,7 @@ part 'user_event.dart';
 part 'user_state.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
-  final UserLogin userLogin;
+  final UserLoginUseCase userLogin;
   UserBloc(this.userLogin) : super(UserInitial()) {
     on<LoginSubmited>(_onUserLogin);
   }

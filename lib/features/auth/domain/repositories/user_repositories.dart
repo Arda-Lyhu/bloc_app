@@ -5,4 +5,12 @@ abstract class UserRepositories {
     required String username,
     required String password,
   });
+
+  Future<UserEntity> logout();
+
+  Future<UserEntity> register({
+    required String username,
+    required String email,
+    required String password,
+  });
 }

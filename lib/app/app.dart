@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import '../core/network/api_client.dart';
 import '../features/auth/data/datasources/user_remote_datasoure.dart';
 import '../features/auth/data/repositories/user_repositories_impl.dart';
 import '../features/auth/domain/usecases/user_login.dart';
@@ -26,16 +27,9 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dio = Dio(
-      BaseOptions(
-        baseUrl: AppEnv.baseUrl,
-        connectTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 10),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-      ),
+    final dio = ApiClient.createDio(
+      baseUrl: AppEnv.baseUrl,
+      tokenProvider: () => null,
     );
 
     final remoteDataSource = ProductRemoteDataSourceImpl(dio: dio);
@@ -47,7 +41,7 @@ class App extends StatelessWidget {
     final userRemoteDataSource = UserRemoteDatasoureImpl(dio: dio);
     final userRepository =
         UserRepositoriesImpl(userRemoteDatasoure: userRemoteDataSource);
-    final userLogin = UserLogin(userRepositories: userRepository);
+    final userLogin = UserLoginUseCase(userRepositories: userRepository);
 
     return MultiRepositoryProvider(
       providers: [

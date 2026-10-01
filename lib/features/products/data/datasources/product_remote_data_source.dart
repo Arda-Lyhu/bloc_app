@@ -1,5 +1,8 @@
 import 'package:dio/dio.dart';
+
+import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_endpoints.dart';
+import '../../../../core/network/base_remote_data_source.dart';
 import '../models/product_model.dart';
 
 abstract class ProductRemoteDataSource {
@@ -8,31 +11,38 @@ abstract class ProductRemoteDataSource {
   Future<List<ProductModel>> searchProducts(String query);
 }
 
-class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
-  final Dio dio;
-
-  ProductRemoteDataSourceImpl({required this.dio});
+class ProductRemoteDataSourceImpl extends BaseRemoteDataSource
+    implements ProductRemoteDataSource {
+  ProductRemoteDataSourceImpl({required Dio dio}) : super(ApiClient(dio));
 
   @override
   Future<List<ProductModel>> getProducts() async {
-    final response = await dio.get(ApiEndpoints.products);
-    final List<dynamic> productsJson = response.data['products'];
-    return productsJson.map((json) => ProductModel.fromJson(json)).toList();
+    return apiClient.get<List<ProductModel>>(
+      path: ApiEndpoints.products,
+      parser: (data) {
+        final List<dynamic> productsJson = data['products'];
+        return productsJson.map((json) => ProductModel.fromJson(json)).toList();
+      },
+    );
   }
 
   @override
   Future<ProductModel> getProductDetail(int id) async {
-    final response = await dio.get(ApiEndpoints.productDetail(id));
-    return ProductModel.fromJson(response.data);
+    return apiClient.get<ProductModel>(
+      path: ApiEndpoints.productDetail(id),
+      parser: (data) => ProductModel.fromJson(data),
+    );
   }
 
   @override
   Future<List<ProductModel>> searchProducts(String query) async {
-    final response = await dio.get(
-      ApiEndpoints.searchProducts,
+    return apiClient.get<List<ProductModel>>(
+      path: ApiEndpoints.searchProducts,
       queryParameters: {'q': query},
+      parser: (data) {
+        final List<dynamic> productsJson = data['products'];
+        return productsJson.map((json) => ProductModel.fromJson(json)).toList();
+      },
     );
-    final List<dynamic> productsJson = response.data['products'];
-    return productsJson.map((json) => ProductModel.fromJson(json)).toList();
   }
 }
