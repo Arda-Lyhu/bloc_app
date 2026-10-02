@@ -1,5 +1,5 @@
-import 'package:app_scale/features/auth/domain/entities/user_entity.dart';
-import 'package:app_scale/features/auth/domain/repositories/user_repositories.dart';
+import '../entities/user_entity.dart';
+import '../repositories/user_repositories.dart';
 
 class UserRegisterUseCase {
   final UserRepositories repository;

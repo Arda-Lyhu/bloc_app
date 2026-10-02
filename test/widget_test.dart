@@ -1,4 +1,4 @@
-import 'package:app_scale/app/app_env.dart';
+import 'package:app_scale/core/core.dart';
 import 'package:app_scale/app/shell/main_shell.dart';
 import 'package:app_scale/app/theme/app_theme.dart';
 import 'package:app_scale/features/cart/presentation/bloc/cart_bloc.dart';
@@ -49,7 +49,7 @@ class FakeProductRepository implements ProductRepository {
 
 void main() {
   testWidgets('App renders smoke test with BLoC', (WidgetTester tester) async {
-    AppEnv.init(environment: AppEnvironment.dev);
+    AppConfig.init(environment: AppEnvironment.dev);
 
     final fakeRepo = FakeProductRepository();
     final getProducts = GetProducts(fakeRepo);

@@ -1,4 +1,7 @@
-import 'package:app_scale/features/home/presentation/screens/home_screen.dart';
+import '../../core/core.dart';
+import '../../features/auth/presentation/screens/register/register_screen.dart';
+import '../../features/home/presentation/screens/home_screen.dart';
+import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'route_name.dart';
 import '../shell/main_shell.dart';
@@ -12,8 +15,13 @@ import '../../features/search/presentation/screens/search_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 
 final appRouter = GoRouter(
-  initialLocation: RoutePath.mainShell,
+  initialLocation: AppConfig.enableOnboarding ? RoutePath.onboarding : RoutePath.mainShell,
   routes: [
+    GoRoute(
+      path: RoutePath.onboarding,
+      name: RouteName.onboarding,
+      builder: (context, state) => const OnboardingScreen(),
+    ),
     GoRoute(
       path: RoutePath.mainShell,
       name: RouteName.mainShell,
@@ -37,6 +45,11 @@ final appRouter = GoRouter(
       path: RoutePath.login,
       name: RouteName.login,
       builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: RoutePath.register,
+      name: RouteName.register,
+      builder: (context, state) => const RegisterScreen(),
     ),
     GoRoute(
       path: RoutePath.categories,

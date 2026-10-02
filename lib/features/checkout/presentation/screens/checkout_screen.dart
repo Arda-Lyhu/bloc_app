@@ -1,71 +1,126 @@
 import 'package:flutter/material.dart';
-import '../../../../app/theme/app_colors.dart';
+import '../../../../core/core.dart';
 
 class CheckoutScreen extends StatelessWidget {
   const CheckoutScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Checkout', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const AppText.h2('Checkout'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Shipping Address',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: const [BoxShadow(color: AppColors.shadow, blurRadius: 10)],
+      body: ResponsiveContainer(
+        maxWidth: 700,
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const AppText.title(
+                'Shipping Address',
+                fontWeight: FontWeight.bold,
               ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Jane Doe', style: TextStyle(fontWeight: FontWeight.bold)),
-                  SizedBox(height: 4),
-                  Text('3 Newbridge Court, Chackbay, NY 11213, United States', style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Payment Method',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            ListTile(
-              leading: const Icon(Icons.credit_card, color: AppColors.primary),
-              title: const Text('Mastercard **** 3947'),
-              trailing: const Icon(Icons.check_circle, color: AppColors.primary),
-            ),
-            const Spacer(),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Order placed successfully!')),
-                  );
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: colorScheme.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                  border: Border.all(
+                    color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+                  ),
                 ),
-                child: const Text('SUBMIT ORDER', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: colorScheme.primaryContainer,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.location_on_rounded,
+                        color: colorScheme.onPrimaryContainer,
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          AppText.subtitle('Jane Doe',
+                              fontWeight: FontWeight.bold),
+                          SizedBox(height: 4),
+                          AppText.caption(
+                            '3 Newbridge Court, Chackbay, NY 11213, United States',
+                            isMuted: true,
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.edit_outlined, size: 20),
+                      onPressed: () => AppHaptics.selection(),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 28),
+              const AppText.title(
+                'Payment Method',
+                fontWeight: FontWeight.bold,
+              ),
+              const SizedBox(height: 12),
+              Container(
+                decoration: BoxDecoration(
+                  color: colorScheme.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: colorScheme.primary.withValues(alpha: 0.5),
+                  ),
+                ),
+                child: ListTile(
+                  leading: Icon(Icons.credit_card_rounded,
+                      color: colorScheme.primary),
+                  title: const AppText.subtitle('Mastercard **** 3947',
+                      fontWeight: FontWeight.w600),
+                  trailing: Icon(Icons.check_circle_rounded,
+                      color: colorScheme.primary),
+                ),
+              ),
+              const Spacer(),
+              AppButton(
+                label: 'SUBMIT ORDER',
+                icon: const Icon(Icons.lock_outline_rounded, size: 20),
+                onPressed: () async {
+                  AppLoader.showOverlay(
+                    context,
+                    message: 'Processing payment...',
+                    style: AppLoaderStyle.wave,
+                  );
+                  await Future.delayed(const Duration(milliseconds: 1500));
+                  if (context.mounted) {
+                    AppLoader.hide(context);
+                    AppAlerts.showSuccess(
+                        context, 'Order placed successfully! 🎉');
+                    Navigator.pop(context);
+                  }
+                },
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );

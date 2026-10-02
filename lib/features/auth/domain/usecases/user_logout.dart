@@ -1,12 +1,23 @@
-import 'package:app_scale/features/auth/domain/entities/user_entity.dart';
-import 'package:app_scale/features/auth/domain/repositories/user_repositories.dart';
+import '../../../../core/network/token_store.dart';
+import '../../../../core/utils/app_logger.dart';
+import '../repositories/user_repositories.dart';
 
 class UserLogoutUseCase {
   final UserRepositories repository;
 
   UserLogoutUseCase(this.repository);
 
-  Future<UserEntity> call() async {
-    return await repository.logout();
+  Future<void> call() async {
+    try {
+      if (TokenStore.instance.token != null &&
+          TokenStore.instance.token!.isNotEmpty) {
+        await repository.logout();
+      }
+    } catch (e, st) {
+      AppLogger.error('UserLogoutUseCase', 'Logout failed',
+          error: e, stackTrace: st);
+    } finally {
+      TokenStore.instance.clear();
+    }
   }
 }

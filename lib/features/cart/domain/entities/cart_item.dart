@@ -1,4 +1,4 @@
-import 'package:app_scale/features/products/domain/entities/product.dart';
+import '../../../products/domain/entities/product.dart';
 
 class CartItem {
   final Product product;

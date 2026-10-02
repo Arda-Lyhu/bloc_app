@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../app/theme/app_colors.dart';
-import '../../../../core/widgets/discount_badge.dart';
-import '../../../../core/widgets/price_tag.dart';
-import '../../../../core/widgets/rating_bar.dart';
+import '../../../../core/core.dart';
 import '../../domain/entities/product.dart';
 
 class ProductItemCard extends StatefulWidget {
@@ -30,6 +27,8 @@ class _ProductItemCardState extends State<ProductItemCard> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final product = widget.product;
     final hasDiscount = product.discountPercentage > 0;
     final discountText = '-${product.discountPercentage.toStringAsFixed(0)}%';
@@ -37,49 +36,50 @@ class _ProductItemCardState extends State<ProductItemCard> {
     return SizedBox(
       width: 150,
       child: GestureDetector(
-        onTap: widget.onTap,
+        onTap: () {
+          AppHaptics.selection();
+          widget.onTap();
+        },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Image Stack
             Stack(
+              clipBehavior: Clip.none,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    height: 180,
-                    width: 150,
-                    color: Colors.grey[200],
-                    child: Image.network(
-                      product.thumbnail,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          const Icon(Icons.image_not_supported, color: Colors.grey),
-                    ),
-                  ),
+                AppNetworkImage(
+                  imageUrl: product.thumbnail,
+                  width: 150,
+                  height: 180,
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 // Badge (-20% or NEW)
+                if (product.isNew && !hasDiscount)
+                  const Positioned(
+                    top: 8,
+                    left: 8,
+                    child: DiscountBadge(text: 'NEW', type: BadgeType.isNew),
+                  )
+                else if (hasDiscount)
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child:
+                        DiscountBadge(text: discountText, type: BadgeType.sale),
+                  ),
+
+                // Floating Favorite Heart Icon
                 Positioned(
-                  top: 8,
-                  left: 8,
-                  child: product.isNew && !hasDiscount
-                      ? const DiscountBadge(text: 'NEW', type: BadgeType.isNew)
-                      : (hasDiscount
-                          ? DiscountBadge(
-                              text: discountText, type: BadgeType.sale)
-                          : const SizedBox.shrink()),
-                ),
-                // Circular White Floating Heart Icon
-                Positioned(
-                  bottom: -4,
-                  right: 0,
+                  bottom: -8,
+                  right: 4,
                   child: Material(
                     elevation: 3,
                     shape: const CircleBorder(),
-                    color: Colors.white,
+                    color: colorScheme.surface,
                     child: InkWell(
                       customBorder: const CircleBorder(),
                       onTap: () {
+                        AppHaptics.buttonPress();
                         setState(() {
                           isFav = !isFav;
                         });
@@ -87,9 +87,13 @@ class _ProductItemCardState extends State<ProductItemCard> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Icon(
-                          isFav ? Icons.favorite : Icons.favorite_border,
+                          isFav
+                              ? Icons.favorite_rounded
+                              : Icons.favorite_border_rounded,
                           size: 18,
-                          color: isFav ? AppColors.primary : AppColors.textSecondary,
+                          color: isFav
+                              ? colorScheme.primary
+                              : colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ),
@@ -97,7 +101,7 @@ class _ProductItemCardState extends State<ProductItemCard> {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
 
             // Rating Stars
             RatingBar(
@@ -107,27 +111,18 @@ class _ProductItemCardState extends State<ProductItemCard> {
             const SizedBox(height: 4),
 
             // Brand Sub-label
-            Text(
+            AppText.caption(
               product.brand,
+              isMuted: true,
               maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 11,
-              ),
             ),
             const SizedBox(height: 2),
 
             // Product Title
-            Text(
+            AppText.body(
               product.title,
+              fontWeight: FontWeight.bold,
               maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
             ),
             const SizedBox(height: 4),
 

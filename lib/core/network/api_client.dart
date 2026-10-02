@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import '../errors/exceptions.dart';
+import '../utils/app_logger.dart';
 
 class ApiClient {
   final Dio dio;
@@ -32,7 +33,33 @@ class ApiClient {
           if (token != null && token.isNotEmpty) {
             options.headers['Authorization'] = 'Bearer $token';
           }
+          AppLogger.network(
+            method: options.method,
+            url: '${options.baseUrl}${options.path}',
+            body: options.data,
+            headers: options.queryParameters.isNotEmpty
+                ? options.queryParameters
+                : null,
+          );
           handler.next(options);
+        },
+        onResponse: (response, handler) {
+          AppLogger.network(
+            method: response.requestOptions.method,
+            url: '${response.requestOptions.baseUrl}${response.requestOptions.path}',
+            statusCode: response.statusCode,
+            response: response.data,
+          );
+          handler.next(response);
+        },
+        onError: (DioException err, handler) {
+          AppLogger.network(
+            method: err.requestOptions.method,
+            url: '${err.requestOptions.baseUrl}${err.requestOptions.path}',
+            statusCode: err.response?.statusCode,
+            error: err.message,
+          );
+          handler.next(err);
         },
       ),
     );

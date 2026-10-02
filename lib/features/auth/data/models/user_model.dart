@@ -1,12 +1,15 @@
 import '../../domain/entities/user_entity.dart';
 
 class UserModel extends UserEntity {
+  final String accessToken;
+
   const UserModel({
     required super.id,
     required super.username,
     required super.email,
     required super.password,
     required super.avatar,
+    required this.accessToken,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -16,6 +19,7 @@ class UserModel extends UserEntity {
       email: json['email'] as String? ?? '',
       password: json['password'] as String? ?? '',
       avatar: (json['image'] ?? json['avatar']) as String? ?? '',
+      accessToken: (json['accessToken'] ?? json['token']) as String? ?? '',
     );
   }
 
@@ -26,6 +30,7 @@ class UserModel extends UserEntity {
       'email': email,
       'password': password,
       'image': avatar,
+      'accessToken': accessToken,
     };
   }
 
@@ -35,6 +40,7 @@ class UserModel extends UserEntity {
     String? email,
     String? password,
     String? avatar,
+    String? accessToken,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -42,6 +48,8 @@ class UserModel extends UserEntity {
       email: email ?? this.email,
       password: password ?? this.password,
       avatar: avatar ?? this.avatar,
+      accessToken: accessToken ?? this.accessToken,
     );
   }
 }
+

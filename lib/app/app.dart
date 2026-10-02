@@ -1,26 +1,14 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import '../core/network/api_client.dart';
-import '../features/auth/data/datasources/user_remote_datasoure.dart';
-import '../features/auth/data/repositories/user_repositories_impl.dart';
-import '../features/auth/domain/usecases/register.dart';
-import '../features/auth/domain/usecases/user_login.dart';
-import '../features/auth/domain/usecases/user_logout.dart';
-import '../features/auth/presentation/bloc/user_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../core/core.dart';
+import '../core/di/injection_container.dart';
+import '../features/auth/presentation/bloc/user_bloc.dart';
 import '../features/cart/presentation/bloc/cart_bloc.dart';
 import '../features/favorites/presentation/bloc/favorites_bloc.dart';
 import '../features/home/presentation/bloc/home_bloc.dart';
 import '../features/home/presentation/bloc/home_event.dart';
-import '../features/products/data/datasources/product_remote_data_source.dart';
-import '../features/products/data/repositories/product_repository_impl.dart';
-import '../features/products/domain/repositories/product_repository.dart';
-import '../features/products/domain/usecases/get_product_detail.dart';
-import '../features/products/domain/usecases/get_products.dart';
-import '../features/products/domain/usecases/search_products.dart';
 import '../features/products/presentation/bloc/product/products_bloc.dart';
 import '../features/products/presentation/bloc/product/products_event.dart';
-import 'app_env.dart';
 import 'router/app_router.dart';
 import 'theme/app_theme.dart';
 
@@ -29,62 +17,37 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dio = ApiClient.createDio(
-      baseUrl: AppEnv.baseUrl,
-      tokenProvider: () => null,
-    );
-
-    final remoteDataSource = ProductRemoteDataSourceImpl(dio: dio);
-    final productRepository =
-        ProductRepositoryImpl(remoteDataSource: remoteDataSource);
-    final getProducts = GetProducts(productRepository);
-    final getProductDetail = GetProductDetail(productRepository);
-    final searchProducts = SearchProducts(productRepository);
-    final userRemoteDataSource = UserRemoteDatasoureImpl(dio: dio);
-    final userRepository =
-        UserRepositoriesImpl(userRemoteDatasoure: userRemoteDataSource);
-    final userLogin = UserLoginUseCase(userRepositories: userRepository);
-    final userRegister = UserRegisterUseCase(userRepository);
-    final userLogout = UserLogoutUseCase(userRepository);
-
-    return MultiRepositoryProvider(
+    return MultiBlocProvider(
       providers: [
-        RepositoryProvider<Dio>.value(value: dio),
-        RepositoryProvider<ProductRepository>.value(value: productRepository),
-        RepositoryProvider<GetProducts>.value(value: getProducts),
-        RepositoryProvider<GetProductDetail>.value(value: getProductDetail),
-        RepositoryProvider<SearchProducts>.value(value: searchProducts),
-      ],
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider<ProductsBloc>(
-            create: (context) => ProductsBloc(getProducts: getProducts)
-              ..add(FetchProductsEvent()),
-          ),
-          BlocProvider<HomeBloc>(
-            create: (context) =>
-                HomeBloc(getProducts: getProducts)..add(FetchHomeFeedEvent()),
-          ),
-          BlocProvider<CartBloc>(
-            create: (context) => CartBloc(),
-          ),
-          BlocProvider<FavoritesBloc>(
-            create: (context) => FavoritesBloc(),
-          ),
-          BlocProvider<UserBloc>(
-            create: (context) => UserBloc(
-              userLogin: userLogin,
-              userRegister: userRegister,
-              userLogout: userLogout,
-            ),
-          ),
-        ],
-        child: MaterialApp.router(
-          title: 'E-Commerce BLoC App',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.lightTheme,
-          routerConfig: appRouter,
+        BlocProvider<ProductsBloc>(
+          create: (_) => sl<ProductsBloc>()..add(FetchProductsEvent()),
         ),
+        BlocProvider<HomeBloc>(
+          create: (_) => sl<HomeBloc>()..add(FetchHomeFeedEvent()),
+        ),
+        BlocProvider<CartBloc>(
+          create: (_) => sl<CartBloc>(),
+        ),
+        BlocProvider<FavoritesBloc>(
+          create: (_) => sl<FavoritesBloc>(),
+        ),
+        BlocProvider<UserBloc>(
+          create: (_) => sl<UserBloc>(),
+        ),
+      ],
+      child: ValueListenableBuilder<AppLanguage>(
+        valueListenable: LanguageController.instance.currentLanguage,
+        builder: (context, lang, _) {
+          return MaterialApp.router(
+            title: AppConfig.appName,
+            debugShowCheckedModeBanner: false,
+            locale: lang.locale,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: ThemeMode.system,
+            routerConfig: appRouter,
+          );
+        },
       ),
     );
   }

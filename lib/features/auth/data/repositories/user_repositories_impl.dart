@@ -1,6 +1,6 @@
-import 'package:app_scale/features/auth/data/datasources/user_remote_datasoure.dart';
-import 'package:app_scale/features/auth/domain/entities/user_entity.dart';
-import 'package:app_scale/features/auth/domain/repositories/user_repositories.dart';
+import '../datasources/user_remote_datasoure.dart';
+import '../../domain/entities/user_entity.dart';
+import '../../domain/repositories/user_repositories.dart';
 
 class UserRepositoriesImpl implements UserRepositories {
   final UserRemoteDatasoure userRemoteDatasoure;
@@ -26,7 +26,10 @@ class UserRepositoriesImpl implements UserRepositories {
       {required String username,
       required String email,
       required String password}) {
-    // TODO: implement register
-    throw UnimplementedError();
+    return userRemoteDatasoure.registerUser(
+      username: username,
+      email: email,
+      password: password,
+    );
   }
 }

@@ -1,5 +1,7 @@
-import 'package:app_scale/features/auth/domain/entities/user_entity.dart';
-import 'package:app_scale/features/auth/domain/repositories/user_repositories.dart';
+import '../../../../core/network/token_store.dart';
+import '../../data/models/user_model.dart';
+import '../entities/user_entity.dart';
+import '../repositories/user_repositories.dart';
 
 class UserLoginUseCase {
   final UserRepositories userRepositories;
@@ -9,9 +11,15 @@ class UserLoginUseCase {
     required String username,
     required String password,
   }) async {
-    return await userRepositories.login(
+    final user = await userRepositories.login(
       username: username,
       password: password,
     );
+    // Persist the access token so all subsequent API calls are authenticated.
+    if (user is UserModel && user.accessToken.isNotEmpty) {
+      TokenStore.instance.save(user.accessToken);
+    }
+    return user;
   }
 }
+
